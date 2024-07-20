@@ -4,6 +4,7 @@ use chrono::{NaiveDate, Local, Duration, Datelike};
 use crate::color::ColorType;
 use crate::race::Race;
 
+#[derive(Default)]
 pub struct CatInfo {
     pub arrived_date: NaiveDate,
     pub name: &'static str,
@@ -48,6 +49,7 @@ fn calculate_age(birth_date: NaiveDate, current_date: NaiveDate) -> u8 {
 
 pub trait Chat {
     type Output;
+    fn default_cat() -> Self::Output;
     fn new_cat(cat_info: CatInfo) -> Self::Output;
     fn spawn_new_cat(nb_cat: u8) -> Vec<Self::Output>;
     fn feed(&mut self);
@@ -59,6 +61,11 @@ pub trait Chat {
 
 impl Chat for CatInfo {
     type Output = CatInfo;
+
+    fn default_cat() -> Self::Output{
+       CatInfo{..Default::default()}
+    }
+
     fn new_cat(cat_info: CatInfo) -> Self::Output {
         cat_info
     }
@@ -82,7 +89,7 @@ impl Chat for CatInfo {
             let health = random::<u8>();
             let female = thread_rng().gen_bool(1.0 / 3.0);
             let (birth_date, arrival_date) = generate_dates();
-            cat_vec.push(CatInfo {
+            cat_vec.push(Self::new_cat(CatInfo{
                 arrived_date: arrival_date,
                 name,
                 age: calculate_age(birth_date, Local::now().naive_utc().date()),
@@ -92,7 +99,7 @@ impl Chat for CatInfo {
                 sleep,
                 health,
                 female
-            });
+            }));
         }
         cat_vec
     }

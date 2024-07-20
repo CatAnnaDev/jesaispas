@@ -1,14 +1,15 @@
 use std::fmt::{Display, Formatter};
 use rand::{distributions::{Distribution, Standard}, Rng};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub enum ColorType {
+    #[default]
     CodeBarre,
     Blanc,
     Noir,
     Roux,
     Gris,
-    Tigré,
+    Tigre,
     Calico,
     Bleu,
     Marron,
@@ -16,11 +17,11 @@ pub enum ColorType {
     EcailleDeTortue,
     Champagne,
     Lilas,
-    Crème,
+    Creme,
     Cannelle,
     Beige,
-    Argenté,
-    Doré,
+    Argente,
+    Dore,
 }
 
 impl Distribution<ColorType> for Standard {
@@ -31,7 +32,7 @@ impl Distribution<ColorType> for Standard {
             2 => ColorType::Noir,
             3 => ColorType::Roux,
             4 => ColorType::Gris,
-            5 => ColorType::Tigré,
+            5 => ColorType::Tigre,
             6 => ColorType::Calico,
             7 => ColorType::Bleu,
             8 => ColorType::Marron,
@@ -39,11 +40,11 @@ impl Distribution<ColorType> for Standard {
             10 => ColorType::EcailleDeTortue,
             11 => ColorType::Champagne,
             12 => ColorType::Lilas,
-            13 => ColorType::Crème,
+            13 => ColorType::Creme,
             14 => ColorType::Cannelle,
             15 => ColorType::Beige,
-            16 => ColorType::Argenté,
-            17 => ColorType::Doré,
+            16 => ColorType::Argente,
+            17 => ColorType::Dore,
             _ => unreachable!(),
         }
     }
@@ -57,7 +58,7 @@ impl Display for ColorType {
             ColorType::Noir => write!(f, "Noir"),
             ColorType::Roux => write!(f, "Roux"),
             ColorType::Gris => write!(f, "Gris"),
-            ColorType::Tigré => write!(f, "Tigré"),
+            ColorType::Tigre => write!(f, "Tigré"),
             ColorType::Calico => write!(f, "Calico"),
             ColorType::Bleu => write!(f, "Bleu"),
             ColorType::Marron => write!(f, "Marron"),
@@ -65,11 +66,11 @@ impl Display for ColorType {
             ColorType::EcailleDeTortue => write!(f, "Écaille de Tortue"),
             ColorType::Champagne => write!(f, "Champagne"),
             ColorType::Lilas => write!(f, "Lilas"),
-            ColorType::Crème => write!(f, "Crème"),
+            ColorType::Creme => write!(f, "Crème"),
             ColorType::Cannelle => write!(f, "Cannelle"),
             ColorType::Beige => write!(f, "Beige"),
-            ColorType::Argenté => write!(f, "Argenté"),
-            ColorType::Doré => write!(f, "Doré"),
+            ColorType::Argente => write!(f, "Argenté"),
+            ColorType::Dore => write!(f, "Doré"),
         }
     }
 }

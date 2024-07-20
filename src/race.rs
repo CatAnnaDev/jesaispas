@@ -1,14 +1,15 @@
 use std::fmt::{Display, Formatter};
 use rand::{distributions::{Distribution, Standard}, Rng};
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Default)]
 pub enum Race {
+    #[default]
     Persan,
     Siamois,
     MaineCoon,
     Sphynx,
     Bengal,
-    Européen,
+    Europeen,
     Birman,
     Chartreux,
     Ragdoll,
@@ -17,7 +18,7 @@ pub enum Race {
     AmericanShorthair,
     ExoticShorthair,
     Oriental,
-    Norvégien,
+    Norvegien,
     AngoraTurc,
     Burmese,
     Manx,
@@ -32,7 +33,7 @@ impl Distribution<Race> for Standard {
             2 => Race::MaineCoon,
             3 => Race::Sphynx,
             4 => Race::Bengal,
-            5 => Race::Européen,
+            5 => Race::Europeen,
             6 => Race::Birman,
             7 => Race::Chartreux,
             8 => Race::Ragdoll,
@@ -41,7 +42,7 @@ impl Distribution<Race> for Standard {
             11 => Race::AmericanShorthair,
             12 => Race::ExoticShorthair,
             13 => Race::Oriental,
-            14 => Race::Norvégien,
+            14 => Race::Norvegien,
             15 => Race::AngoraTurc,
             16 => Race::Burmese,
             17 => Race::Manx,
@@ -59,7 +60,7 @@ impl Display for Race {
             Race::MaineCoon => write!(f, "Maine Coon"),
             Race::Sphynx => write!(f, "Sphynx"),
             Race::Bengal => write!(f, "Bengal"),
-            Race::Européen => write!(f, "Européen"),
+            Race::Europeen => write!(f, "Européen"),
             Race::Birman => write!(f, "Birman"),
             Race::Chartreux => write!(f, "Chartreux"),
             Race::Ragdoll => write!(f, "Ragdoll"),
@@ -68,7 +69,7 @@ impl Display for Race {
             Race::AmericanShorthair => write!(f, "American Shorthair"),
             Race::ExoticShorthair => write!(f, "Exotic Shorthair"),
             Race::Oriental => write!(f, "Oriental"),
-            Race::Norvégien => write!(f, "Norvégien"),
+            Race::Norvegien => write!(f, "Norvégien"),
             Race::AngoraTurc => write!(f, "Angora Turc"),
             Race::Burmese => write!(f, "Burmese"),
             Race::Manx => write!(f, "Manx"),
