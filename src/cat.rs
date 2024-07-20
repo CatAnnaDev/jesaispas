@@ -39,11 +39,9 @@ fn generate_dates() -> (NaiveDate, NaiveDate) {
 
 fn calculate_age(birth_date: NaiveDate, current_date: NaiveDate) -> u8 {
     let mut age = current_date.year() - birth_date.year();
-
     if (current_date.month() < birth_date.month()) || (current_date.month() == birth_date.month() && current_date.day() < birth_date.day()) {
         age -= 1;
     }
-
     age as u8
 }
 
@@ -58,6 +56,7 @@ pub trait Chat {
     fn age(&mut self);
     fn mate(&self, other: &Self) -> Option<Self::Output>;
 }
+
 
 impl Chat for CatInfo {
     type Output = CatInfo;
