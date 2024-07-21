@@ -2,7 +2,6 @@
 use requestty::{Answer, OnEsc, prompt_one, Question};
 
 use cat::CatInfo;
-
 mod color;
 mod race;
 mod cat;
