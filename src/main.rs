@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use requestty::{Answer, OnEsc, prompt_one, Question};
 
 use cat::CatInfo;
@@ -10,9 +11,8 @@ mod log_color;
 fn main() {
     let mut cats = CatInfo::spawn_new_cat(2);
     for cat in &cats {
-        info!("{}", cat);
+        cat.minimal_info()
     }
-
 
     loop {
         let x = build_question(&cats);
@@ -38,15 +38,29 @@ fn main() {
                                 "Sleep" => chat1.toggle_sleep(),
                                 "Play" => chat1.play(),
                                 "Age" => chat1.age(),
-                                "Stats" => {
-                                    for cat in &cats {
-                                        info!("{}", cat);
-                                    }
-                                }
                                 _ => {
                                     warn!("No cat select")
                                 }
                             }
+                        }
+                    }else {
+                        match nb.first().unwrap().text.as_str() {
+                            "Stats" => {
+                                for cat in &cats {
+                                    info!("{}", cat);
+                                }
+                            }
+                            "Minimal Stats" => {
+                                for cat in &cats {
+                                    cat.minimal_info()
+                                }
+                            }
+                            "Feed All" => {
+                                for cat in &mut cats {
+                                    cat.feed()
+                                }
+                            }
+                            _ => {}
                         }
                     }
                 } else {
@@ -63,15 +77,17 @@ fn ask_cat() -> Question<'static> {
         .choice("Sleep")
         .choice("Play")
         .choice("Age")
-        .choice("Stats")
         .build()
 }
 
 
-fn build_question(find: &Vec<CatInfo>) -> requestty::Result<Answer> {
+fn build_question(find: &[CatInfo]) -> requestty::Result<Answer> {
     let multi_select = Question::multi_select("Cat Interaction")
         .message("What's Cat do you want?")
-        .choices(find.iter().map(|s| { format!("{}", s.name) }).collect::<Vec<_>>())
+        .choices(find.iter().map(|s| s.name ).collect::<Vec<_>>())
+        .choice("Stats")
+        .choice("Minimal Stats")
+        .choice("Feed All")
         .on_esc(OnEsc::Terminate)
         .page_size(20)
         .should_loop(false)

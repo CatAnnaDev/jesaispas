@@ -4,7 +4,7 @@ use std::fmt::{Display, Formatter};
 use chrono::{Datelike, Duration, Local, NaiveDate};
 use rand::{random, Rng, thread_rng};
 
-use crate::{bool_state, interaction, warn};
+use crate::{bool_state, info, interaction, warn};
 use crate::cat::Gender::{Female, Male};
 use crate::color::ColorType;
 use crate::race::Race;
@@ -23,13 +23,12 @@ const GENDER_FEMALE: [&str; 17] = [
     "Nala", "Pepper", "Zoe", "Callie", "Angel", "Kitty",
 ];
 
-#[derive(Eq, PartialEq, Default)]
+#[derive(Eq, Default, PartialEq)]
 pub enum Gender {
     #[default]
     Female,
     Male,
 }
-
 
 impl Display for Gender{
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -44,11 +43,20 @@ impl Gender {
     pub fn get_random_gender() -> Gender {
         if random() { Female } else { Male }
     }
+
+    pub fn get_random_name_and_gender() -> (&'static str, Gender) {
+        let gender = Self::get_random_gender();
+        match gender {
+        Male => {(GENDER_MALE[thread_rng().gen_range(0..GENDER_MALE.len())], gender)}
+        Female => {(GENDER_FEMALE[thread_rng().gen_range(0..GENDER_FEMALE.len())], gender)}
+        }
+    }
 }
 
 #[derive(Default)]
 pub struct CatInfo {
     pub arrived_date: NaiveDate,
+    pub bd_date: NaiveDate,
     pub name: &'static str,
     pub age: u8,
     pub color_type: ColorType,
@@ -99,24 +107,21 @@ impl CatInfo {
     pub(crate) fn spawn_new_cat(nb_cat: u8) -> Vec<Self> {
         let mut cat_vec = Vec::new();
 
-
         for _ in 0..nb_cat {
             let color: ColorType = random();
             let race: Race = random();
             let sleep = random();
             let health = random::<u8>();
-            let gender = Gender::get_random_gender();
+            let (name, gender) = Gender::get_random_name_and_gender();
             let (birth_date, arrival_date) = generate_dates();
             cat_vec.push(Self::new_cat(CatInfo {
                 arrived_date: arrival_date,
-                name: match gender {
-                    Male => {GENDER_MALE[thread_rng().gen_range(0..GENDER_MALE.len())]}
-                    Female => {GENDER_FEMALE[thread_rng().gen_range(0..GENDER_FEMALE.len())]}
-                },
+                bd_date: birth_date,
+                name,
                 age: calculate_age(birth_date, Local::now().naive_utc().date()),
                 color_type: color,
                 race,
-                weight: thread_rng().gen_range(3.0..6.0),
+                weight: thread_rng().gen_range(1.5..7.0),
                 sleep,
                 health,
                 gender,
@@ -157,48 +162,47 @@ impl CatInfo {
         interaction!("{} a vieilli. Nouvel âge: {}, Santé: {}", self.name, self.age, self.health);
     }
 
-    pub(crate) fn mate(&self, other: &Self) -> Option<Self> {
-        if self.gender == other.gender && self.sleep || other.sleep {
-            warn!("\nCan't mate {} with {}\nbecause:", self.name, other.name);
-            if self.gender == other.gender {
-                warn!("- Same Sexe");
-            }
-            if self.sleep {
-                warn!("- {} sleep", self.name)
-            }
-            if other.sleep {
-                warn!("- {} sleep", other.name)
-            }
+    pub(crate) fn mate(&self, other: &Self,) -> Option<Self> {
 
+        if self.gender.eq(&other.gender) || self.sleep || other.sleep {
+            warn!("\nCan't mate {} with {}\nbecause:", self.name, other.name);
+            if self.gender.eq(&other.gender) { warn!("- Same Sexe"); }
+            if self.sleep { warn!("- {} sleep", self.name); }
+            if other.sleep { warn!("- {} sleep", other.name); }
             return None;
         }
 
-        let name = format!("{}{}", &self.name[0..self.name.len() / 2], &other.name[other.name.len() / 2..]);
-
+        //let name = format!("{}{}", &self.name[0..self.name.len() / 2], &other.name[other.name.len() / 2..]);
+        let (name, gender) = Gender::get_random_name_and_gender();
         let color = if random() { self.color_type } else { other.color_type };
-
         let race = if random() { self.race } else { other.race };
 
         Some(CatInfo {
             arrived_date: Local::now().naive_utc().date(),
-            name: Box::leak(name.into_boxed_str()),
+            bd_date: Local::now().naive_utc().date(),
+            name,
             age: 1,
             color_type: color,
             race,
             weight: 1.0,
             sleep: false,
             health: 100,
-            gender: Gender::get_random_gender(),
+            gender,
         })
     }
+
+    pub(crate) fn minimal_info(&self){
+        info!("Name: {}\n- Genre: {}\x1B[32m\n- Age: {}\n- Sleep: {}\n", self.name, self.gender, self.age, bool_state!("31mYES", "32mNO", self.sleep))
+    }
+
 }
 
 impl Display for CatInfo {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Name: {}\n- Age: {} an(s)\n- Color: {}\n- Race: {}\n- Weight: {:.2} kg\n- Sleep: {}\x1B[32m\n- Health: {}\n- Sexe: {}\x1B[32m\n- Entrance Date: {}\n",
-            self.name, self.age, self.color_type, self.race, self.weight, bool_state!("31mYES", "32mNO", self.sleep), self.health, self.gender, self.arrived_date
+            "Name: {}\n- Age: {} an(s)\n- Color: {}\n- Race: {}\n- Weight: {:.2} kg\n- Sleep: {}\x1B[32m\n- Health: {}\n- Sexe: {}\x1B[32m\n- Entrance Date: {}\n- Bd Date: {}\n",
+            self.name, self.age, self.color_type, self.race, self.weight, bool_state!("31mYES", "32mNO", self.sleep), self.health, self.gender, self.arrived_date, self.bd_date,
         )
     }
 }
